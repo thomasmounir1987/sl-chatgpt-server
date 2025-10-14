@@ -2,8 +2,6 @@ import express from "express";
 import bodyParser from "body-parser";
 import axios from "axios";
 import cors from "cors";
-import fs from "fs";
-import { exec } from "child_process";
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -12,14 +10,15 @@ app.use(cors());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
-// استبدل بمفتاحك في Vercel Environment Variables
 const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
 const OPENAI_MODEL = process.env.OPENAI_MODEL || "gpt-4o-mini";
 
+// ✅ الصفحة الرئيسية
 app.get("/", (req, res) => {
-  res.send("✅ ChatGPT Second Life Bridge Server is running!");
+  res.send("✅ ChatGPT Second Life Bridge is running fine!");
 });
 
+// ✅ المسار الذي يستقبل الرسائل من LSL
 app.post("/sl-to-openai", async (req, res) => {
   try {
     const { message, avatar_name } = req.body;
@@ -35,7 +34,7 @@ app.post("/sl-to-openai", async (req, res) => {
         messages: [
           {
             role: "system",
-            content: "You are a helpful AI assistant inside Second Life.",
+            content: "You are an AI assistant living inside Second Life. Respond conversationally and briefly.",
           },
           { role: "user", content: message },
         ],
@@ -49,11 +48,10 @@ app.post("/sl-to-openai", async (req, res) => {
     );
 
     const reply = openaiRes.data.choices[0].message.content;
-
     res.json({ reply });
   } catch (error) {
-    console.error("Error:", error.response?.data || error.message);
-    res.status(500).json({ reply: "❌ Server Error: " + error.message });
+    console.error("Server error:", error.message);
+    res.status(500).json({ reply: "❌ Server error: " + error.message });
   }
 });
 
