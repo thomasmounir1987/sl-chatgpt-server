@@ -1,18 +1,16 @@
 {
-  "name": "sl-chatgpt-proxy",
+  "name": "sl-chatgpt-server",
   "version": "1.0.0",
-  "description": "Proxy server for Second Life prime -> OpenAI (ChatGPT) with optional TTS endpoint",
   "main": "server.js",
+  "type": "module",
   "scripts": {
     "start": "node server.js"
   },
   "dependencies": {
-    "express": "^4.18.2",
-    "openai": "^4.3.0",
+    "express": "^4.19.2",
     "body-parser": "^1.20.2",
-    "cors": "^2.8.5",
-    "node-fetch": "^3.3.2",
-    "dotenv": "^16.0.3",
-    "gtts": "^1.1.1"
+    "axios": "^1.7.2",
+    "gtts": "^1.0.0",
+    "cors": "^2.8.5"
   }
 }
