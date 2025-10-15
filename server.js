@@ -1,3 +1,20 @@
+import express from "express";
+import cors from "cors";
+import bodyParser from "body-parser";
+import OpenAI from "openai";
+
+const app = express();
+app.use(cors());
+app.use(bodyParser.json());
+
+const openai = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY
+});
+
+app.get("/", (req, res) => {
+  res.send("✅ ChatGPT bridge server is running!");
+});
+
 app.post("/sl-to-openai", async (req, res) => {
   try {
     const { message } = req.body;
@@ -25,3 +42,6 @@ app.post("/sl-to-openai", async (req, res) => {
     res.status(500).send("Internal Server Error → " + err.message + " | " + JSON.stringify(err));
   }
 });
+
+const port = process.env.PORT || 3000;
+app.listen(port, () => console.log(`✅ Server running on port ${port}`));
