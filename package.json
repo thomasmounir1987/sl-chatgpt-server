@@ -11,5 +11,8 @@
     "body-parser": "^1.20.2",
     "cors": "^2.8.5",
     "openai": "^4.56.0"
+  },
+  "engines": {
+    "node": "18.x"
   }
 }
