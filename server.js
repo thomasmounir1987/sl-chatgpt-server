@@ -39,10 +39,14 @@ app.post("/api/message", async (req, res) => {
     console.log("🤖 الرد:", reply);
 
     res.json({ reply });
-  } catch (error) {
-    console.error("❌ خطأ أثناء الاتصال بـ ChatGPT:", error);
-    res.status(500).json({ error: error.message || "Internal Server Error" });
+  catch (error) {
+  console.error("❌ خطأ كامل من OpenAI:", error);
+  if (error.response) {
+    console.error("Status:", error.response.status);
+    console.error("Data:", error.response.data);
   }
-});
+  res.status(500).json({ error: error.message || "Internal Server Error" });
+}
+
 
 export default app;
