@@ -58,3 +58,22 @@ app.post("/sl-to-openai", async (req, res) => {
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);
 });
+app.post("/sl-to-openai", async (req, res) => {
+  try {
+    const { message, avatar_name } = req.body;
+
+    const completion = await openai.chat.completions.create({
+      model: process.env.OPENAI_MODEL,
+      messages: [
+        { role: "system", content: "You are a helpful AI assistant inside Second Life." },
+        { role: "user", content: message },
+      ],
+    });
+
+    const reply = completion.choices[0].message.content;
+    res.json({ reply });
+  } catch (err) {
+    console.error("🔥 Server Error:", err);
+    res.status(500).send("Internal Server Error: " + err.message);
+  }
+});
