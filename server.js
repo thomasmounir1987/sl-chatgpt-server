@@ -13,7 +13,7 @@ const openai = new OpenAI({
 });
 
 app.get("/", (req, res) => {
-  res.send("✅ ChatGPT bridge server is running!");
+  res.send("✅ ChatGPT bridge server is running on Vercel!");
 });
 
 app.post("/sl-to-openai", async (req, res) => {
@@ -31,12 +31,9 @@ app.post("/sl-to-openai", async (req, res) => {
     const completion = await openai.chat.completions.create({
       model: process.env.OPENAI_MODEL || "gpt-4o-mini",
       messages: [
-        {
-          role: "system",
-          content: "You are a friendly AI assistant living inside Second Life. Respond naturally and concisely.",
-        },
-        { role: "user", content: message },
-      ],
+        { role: "system", content: "You are a friendly AI assistant living inside Second Life." },
+        { role: "user", content: message }
+      ]
     });
 
     const reply = completion.choices?.[0]?.message?.content || "⚠️ No reply generated.";
@@ -48,6 +45,4 @@ app.post("/sl-to-openai", async (req, res) => {
 });
 
 const port = process.env.PORT || 3000;
-app.listen(port, () => {
-  console.log(`✅ Server running on port ${port}`);
-});
+app.listen(port, () => console.log(`✅ Server running on port ${port}`));
