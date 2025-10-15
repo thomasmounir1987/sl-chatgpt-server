@@ -1,48 +1,49 @@
 import express from "express";
-import cors from "cors";
-import bodyParser from "body-parser";
 import OpenAI from "openai";
 
 const app = express();
-app.use(cors());
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use(bodyParser.json());
+app.use(express.json());
 
-const openai = new OpenAI({
+const client = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
 app.get("/", (req, res) => {
-  res.send("✅ ChatGPT bridge server is running on Vercel!");
+  res.send("✅ SL ChatGPT Server is running!");
 });
 
-app.post("/sl-to-openai", async (req, res) => {
+app.post("/api/message", async (req, res) => {
+  const { name, message } = req.body;
+
+  if (!name || !message) {
+    return res.status(400).json({ error: "Missing 'name' or 'message' in request body." });
+  }
+
   try {
-    const { message, avatar_name } = req.body;
-
-    if (!process.env.OPENAI_API_KEY) {
-      return res.status(500).send("❌ Missing OpenAI API key.");
-    }
-
-    if (!message) {
-      return res.status(400).send("❌ No message provided.");
-    }
-
-    const completion = await openai.chat.completions.create({
-      model: process.env.OPENAI_MODEL || "gpt-4o-mini",
+    // استدعاء نموذج ChatGPT
+    const completion = await client.chat.completions.create({
+      model: "gpt-4o-mini",
       messages: [
-        { role: "system", content: "You are a friendly AI assistant living inside Second Life." },
-        { role: "user", content: message }
-      ]
+        {
+          role: "system",
+          content: "أنت روبوت داخل Second Life، تتحدث بشكل ودود، لبق، وممتع."
+        },
+        {
+          role: "user",
+          content: `${name} قال: ${message}`
+        }
+      ],
     });
 
-    const reply = completion.choices?.[0]?.message?.content || "⚠️ No reply generated.";
+    const reply = completion.choices[0].message.content.trim();
+    console.log(`💬 ${name}: ${message}`);
+    console.log(`🤖 ChatGPT: ${reply}`);
+
     res.json({ reply });
-  } catch (err) {
-    console.error("🔥 Server Error:", err);
-    res.status(500).send("Internal Server Error: " + err.message);
+  } catch (error) {
+    console.error("❌ Error:", error);
+    res.status(500).json({ error: "حدث خطأ أثناء الاتصال بـ ChatGPT API." });
   }
 });
 
-const port = process.env.PORT || 3000;
-app.listen(port, () => console.log(`✅ Server running on port ${port}`));
+export default app;
